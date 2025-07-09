@@ -8,7 +8,7 @@
 #define TCP_PORT 8888      // TCP 目的端口号
 #define UDP_PORT 9999      // UDP 目的端口号
 #define MAX_BUF 1024       // 缓冲区最大长度
-#define SERVER_IP "192.168.43.151"
+#define SERVER_IP "192.168.43.149"
 // UDP 查询结构体
 struct UdpQuery {
     int type;         // 查询类型（1：按姓名查询，2：其他功能）
@@ -29,14 +29,14 @@ int main() {
         close(tcp_sock); // 关闭 TCP 套接字
         return 1; // 返回错误代码
     } else {
-        // sockaddr_in local_addr_tcp{};
-        // socklen_t addr_len_tcp = sizeof(local_addr_tcp);
-        // getsockname(tcp_sock, (sockaddr*)&local_addr_tcp, &addr_len_tcp);
-        // char ip_str[INET_ADDRSTRLEN]; // 用于存放本地 IP 地址字符串
-        // inet_ntop(AF_INET, &local_addr_tcp.sin_addr, ip_str, sizeof(ip_str)); // 把 IP 地址从二进制格式转换成字符串
+        sockaddr_in local_addr_tcp{};
+        socklen_t addr_len_tcp = sizeof(local_addr_tcp);
+        getsockname(tcp_sock, (sockaddr*)&local_addr_tcp, &addr_len_tcp);
+        char ip_str[INET_ADDRSTRLEN]; // 用于存放本地 IP 地址字符串
+        inet_ntop(AF_INET, &local_addr_tcp.sin_addr, ip_str, sizeof(ip_str)); // 把 IP 地址从二进制格式转换成字符串
         std::cout << "已连接到服务器" << "\n";
-        // std::cout << "源IP: " << ip_str << ", 源端口: " << ntohs(local_addr_tcp.sin_port) << "\n";
-        // std::cout << "目的IP: " << inet_ntoa(addr_tcp.sin_addr) << ", 目的端口: " << ntohs(addr_tcp.sin_port) << "\n\n";
+        std::cout << "源IP: " << ip_str << ", 源端口: " << ntohs(local_addr_tcp.sin_port) << "\n";
+        std::cout << "目的IP: " << inet_ntoa(addr_tcp.sin_addr) << ", 目的端口: " << ntohs(addr_tcp.sin_port) << "\n\n";
     }
 
     char msg[MAX_BUF] = {};
@@ -74,21 +74,12 @@ int main() {
         std::cout << (choice == 1 ? "正在发送查询...\n" : "正在发送系统信息查询...\n");
         // 发送查询到服务器
         sendto(udp_sock, &query, sizeof(query), 0, (sockaddr*)&addr_udp, sizeof(addr_udp));
-
-        // sockaddr_in local_addr_udp{};
-        // socklen_t addr_len_udp = sizeof(local_addr_udp);
-        // getsockname(udp_sock, (sockaddr*)&local_addr_udp, &addr_len_udp);
-        // char ip_str[INET_ADDRSTRLEN]; // 用于存放本地 IP 地址字符串
-        // inet_ntop(AF_INET, &local_addr_udp.sin_addr, ip_str, sizeof(ip_str)); // 把 IP 地址从二进制格式转换成字符串
-        // std::cout << "源IP: " << ip_str << ", 源端口: " << ntohs(local_addr_udp.sin_port) << "\n";
-        // std::cout << "目的IP: " << inet_ntoa(addr_udp.sin_addr) << ", 目的端口: " << ntohs(addr_udp.sin_port) << "\n";
-
         // 接收服务器回复
         // 客户端没有用 bind 主动绑定本地IP和端口，所以操作系统会自动分配一个本地IP（通常是本机可用的IP）和一个临时端口。此时：
         // recvfrom 会监听这个自动分配的本地IP和端口，只要有数据包发到这个端口（无论哪个远程IP/端口发来的），都能收到。
         memset(msg, 0, sizeof(msg));
         recvfrom(udp_sock, msg, MAX_BUF, 0, nullptr, nullptr);
-        std::cout << msg << std::endl;
+        std::cout <<"【服务器回复】\n"<< msg << std::endl;
     }
 
     close(udp_sock); // 关闭 UDP 套接字
