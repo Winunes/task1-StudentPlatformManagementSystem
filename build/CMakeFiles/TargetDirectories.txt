@@ -1,0 +1,5 @@
+/home/lee/task1/build/CMakeFiles/rebuild_cache.dir
+/home/lee/task1/build/CMakeFiles/edit_cache.dir
+/home/lee/task1/build/CMakeFiles/addInfo.dir
+/home/lee/task1/build/CMakeFiles/client.dir
+/home/lee/task1/build/CMakeFiles/server.dir
